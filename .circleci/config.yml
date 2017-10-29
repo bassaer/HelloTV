@@ -5,9 +5,9 @@
 version: 2
 jobs:
   build:
-  branches:
-    only:
-      - master
+    branches:
+      only:
+        - master
     working_directory: ~/app
     docker:
       # specify the version you desire here
