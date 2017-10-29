@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+def appVersion = '1.0.1'
+
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.0"
@@ -8,7 +10,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0"
+        versionName appVersion
     }
     buildTypes {
         release {
@@ -18,9 +20,108 @@ android {
     }
 }
 
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+group = 'com.github.bassaer'
+version = appVersion
+
+def siteUrl = 'https://github.com/bassaer/HelloTV'
+def gitUrl = 'https://github.com/bassaer/HelloTV.git'
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty('bintray_user')
+    key = properties.getProperty('bintray_api_key')
+
+    configurations = ['archives']
+
+    pkg {
+        repo = 'HelloTV'
+        name = project.name
+        userOrg = 'tnakayama'
+        desc = 'Video browser app for Android TV'
+        websiteUrl = siteUrl
+        issueTrackerUrl = 'https://github.com/bassaer/HelloTV/issues'
+        vcsUrl = gitUrl
+        licenses = ['Apache-2.0']
+        labels = ['android']
+        publicDownloadNumbers = true
+    }
+}
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar'
+                name = project.name
+                url = siteUrl
+                licenses {
+                    license {
+                        name 'Apache-2.0'
+                        url 'http://www.apache.org/licenses/'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'bassaer'
+                        name 'Tsubasa Nakayama'
+                        email 'app.nakayama@gmail.com'
+                    }
+                }
+                scm {
+                    connection = gitUrl
+                    developerConnection = gitUrl
+                    url siteUrl
+                }
+            }
+        }
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:leanback-v17:26.+'
-    compile 'com.android.support:appcompat-v7:26.+'
-    compile 'com.github.bumptech.glide:glide:3.4.+'
+    compile 'com.android.support:leanback-v17:26+'
+    compile 'com.android.support:appcompat-v7:26+'
+    compile 'com.github.bumptech.glide:glide:3.8.0'
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+task findConventions << {
+    println project.getConvention()
+}
+
+def repo = new File(rootDir, "repository")
+
+apply plugin: "maven"
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository url: "file://${repo.absolutePath}"
+            pom.version = appVersion
+            pom.groupId = 'com.github.bassaer'
+            pom.artifactId = 'hellotv'
+        }
+    }
 }
