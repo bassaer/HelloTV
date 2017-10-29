@@ -23,7 +23,7 @@ jobs:
 
       - run:
           name: load bintray properties
-          command:
+          commands:
               - echo "bintray_user="$BINTRAY_USER > ~/local.properties
               - echo "bintray_api_key="$BINTRAY_API_KEY >> ~/local.properties
 
@@ -38,7 +38,7 @@ jobs:
       # run tests!
       - run:
           name: gradle test
-          command:
+          commands:
               - ./gradlew test
               - ./gradlew lint test
 
