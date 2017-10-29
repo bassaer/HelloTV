@@ -24,8 +24,8 @@ jobs:
       - run:
           name: load bintray properties
           command:
-              echo "bintray_user="$BINTRAY_USER > ~/local.properties
-              echo "bintray_api_key="$BINTRAY_API_KEY >> ~/local.properties
+              - echo "bintray_user="$BINTRAY_USER > ~/local.properties
+              - echo "bintray_api_key="$BINTRAY_API_KEY >> ~/local.properties
 
       - run:
           name: gradle dependencies
@@ -39,8 +39,8 @@ jobs:
       - run:
           name: gradle test
           command:
-              ./gradlew test
-              ./gradlew lint test
+              - ./gradlew test
+              - ./gradlew lint test
 
       - store_test_results:
           path: app/build/test-results
@@ -54,9 +54,9 @@ jobs:
           command: |
             if [ $CIRCLE_BRANCH = "master" ] || [ $CIRCLE_BRANCH = "develop" ]; then
                 # 特定ブランチの場合のみBintrayへのアップロード
-                ./deploy.sh
+                - ./deploy.sh
             else
-                echo "Bintray distribution is skipped."
+                - echo "Bintray distribution is skipped."
             fi
 
 
