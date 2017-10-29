@@ -5,6 +5,9 @@
 version: 2
 jobs:
   build:
+  branches:
+    only:
+      - master
     working_directory: ~/app
     docker:
       # specify the version you desire here
@@ -53,8 +56,16 @@ jobs:
           name: Distribute Bintray
           command: |
             if [ $CIRCLE_BRANCH = "master" ] || [ $CIRCLE_BRANCH = "develop" ]; then
-                # 特定ブランチの場合のみBintrayへのアップロード
-                ./deploy.sh
+                # AAR build
+                ./gradlew assembleRelease
+
+                # create maven repo
+                ./gradlew uploadArchives
+
+                # deploy to bintray
+                ./gradlew build
+                ./gradlew bintrayUpload
+
             else
                 echo "Bintray distribution is skipped."
             fi
