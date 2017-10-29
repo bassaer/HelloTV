@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-def appVersion = '1.0.1'
+def appVersion = '1.0.2'
 
 android {
     compileSdkVersion 26
