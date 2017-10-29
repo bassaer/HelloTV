@@ -5,6 +5,7 @@
 version: 2
 jobs:
   build:
+  working_directory: ~/app
     docker:
       # specify the version you desire here
       - image: circleci/android:api-25-alpha
@@ -20,12 +21,6 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-
-      - run:
-          name: load bintray properties
-          command: |
-              echo "bintray_user="$BINTRAY_USER > ~/local.properties
-              echo "bintray_api_key="$BINTRAY_API_KEY >> ~/local.properties
 
       - run:
           name: gradle dependencies

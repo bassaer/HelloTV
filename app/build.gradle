@@ -29,11 +29,19 @@ version = appVersion
 def siteUrl = 'https://github.com/bassaer/HelloTV'
 def gitUrl = 'https://github.com/bassaer/HelloTV.git'
 Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def localProperties = project.rootProject.file('local.properties')
+
 
 bintray {
-    user = properties.getProperty('bintray_user')
-    key = properties.getProperty('bintray_api_key')
+    if (localProperties.exists()) {
+        properties.load(localProperties.newDataInputStream())
+        user = properties.getProperty('bintray_user')
+        key = properties.getProperty('bintray_api_key')
+    } else {
+        //Circle CI ENV
+        user = BINTRAY_USER
+        key = BINTRAY_API_KEY
+    }
 
     configurations = ['archives']
 
